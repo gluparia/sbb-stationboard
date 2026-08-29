@@ -1,4 +1,5 @@
 <script>
+  (function () {
   /* ================================================
      SHARED CODE FOR SBB SWISS STATIONBOARD PLUGIN
      ================================================ */
@@ -10,8 +11,8 @@
     return s === '' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined';
   }
 
-  function getData(attr, fb = '') {
-    const v = document.body.getAttribute(attr);
+  function getData(container, attr, fb = '') {
+    const v = container.getAttribute(attr);
     if (isBlank(v) || String(v).trim() === '0') return fb;
     return String(v).trim();
   }
@@ -70,15 +71,15 @@
     return "";
   }
 
-  function getCablewayIconHtml() {
-    const pref = String(getData('data-cablewayicon', 'Gondel')).toLowerCase();
+  function getCablewayIconHtml(container) {
+    const pref = String(getData(container, 'data-cablewayicon', 'Gondel')).toLowerCase();
     if (pref === 'zahnradbahn') {
       return '<img class="image" src="https://img.icons8.com/ios/25/funicular.png" alt="funicular" style="height:25px;vertical-align:middle;" />';
     }
     return '<img class="image" src="https://img.icons8.com/ios/25/cable-car.png" alt="cable-car" style="height:25px;vertical-align:middle;" />';
   }
 
-  function getLineSymbol(category) {
+  function getLineSymbol(container, category) {
     const c = String(category || '').toUpperCase();
     if (c === "T" || c === "TRAM")
       return '<img class="image" src="https://img.icons8.com/ios/25/tram.png" style="height:25px;vertical-align:middle;" />';
@@ -90,7 +91,7 @@
     if (g === "ship")
       return '<img class="image" src="https://img.icons8.com/ios/25/water-transportation.png" style="height:25px;vertical-align:middle;" />';
     if (g === "cableway")
-      return getCablewayIconHtml();
+      return getCablewayIconHtml(container);
     return '<img class="image" src="https://img.icons8.com/ios-filled/25/bus.png" style="height:25px;vertical-align:middle;" />';
   }
 
@@ -144,26 +145,23 @@
   }
 
   /* -------- Main Rendering Function -------- */
-  function renderDepartures(maxRows, labelSize) {
-    const tbody = document.getElementById('departures-body');
+  function renderDepartures(container, data, maxRows, labelSize) {
+    const tbody = container.querySelector('.departures-body');
 
-    const station = getData('data-station', 'Zürich, Im Hagacker');
-    const station_id = getData('data-station_id', '8591209');
-    const walkingTime = toInt(getData('data-walkingtime'), 0);
-    const minOffset = toInt(getData('data-mindepartureoffset'), 0);
+    const station = getData(container, 'data-station', 'Zürich, Im Hagacker');
+    const station_id = getData(container, 'data-station-id', '8591209');
+    const walkingTime = toInt(getData(container, 'data-walkingtime'), 0);
+    const minOffset = toInt(getData(container, 'data-mindepartureoffset'), 0);
 
-    const abbrList = parseAbbrPairs(getData('data-abbrs'));
-    const hidewords = parseCsv(getData('data-hidewords'));
-    const filterList = parseCsv(getData('data-linetargetfilter')).map(s => s.toLowerCase());
-    const hidden = parseHiddenGroups(getData('data-hidegroups'));
+    const abbrList = parseAbbrPairs(getData(container, 'data-abbrs'));
+    const hidewords = parseCsv(getData(container, 'data-hidewords'));
+    const filterList = parseCsv(getData(container, 'data-linetargetfilter')).map(s => s.toLowerCase());
+    const hidden = parseHiddenGroups(getData(container, 'data-hidegroups'));
 
     if (isBlank(station) || isBlank(station_id)) {
       tbody.innerHTML = `<tr><td colspan="6"><span class="label label--${labelSize}" style="color:#d10505;">Keine Station konfiguriert.</span></td></tr>`;
       return;
     }
-
-    // Get stationboard data (injected by layout-specific file)
-    const data = window.stationboardData || {};
 
     let rowsHtml = '';
 
@@ -216,7 +214,7 @@
 
       rowsHtml += `
         <tr style="line-height:1.15;">
-          <td class="col-sym">${getLineSymbol(category)}</td>
+          <td class="col-sym">${getLineSymbol(container, category)}</td>
           <td class="col-lineno"><span class="label label--${labelSize}">${esc(lineNumber)}</span></td>
           <td class="col-linie"><span class="label label--${labelSize}" style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(displayTarget)}</span></td>
           <td class="col-abfahrt"><span class="label label--${labelSize} time">${departureTime.toLocaleTimeString('de-CH', timeOptions)}</span></td>
@@ -232,6 +230,10 @@
     }
     tbody.innerHTML = rowsHtml;
   }
+
+  window.SBBStationboard = window.SBBStationboard || {};
+  window.SBBStationboard.renderDepartures = renderDepartures;
+  })();
 </script>
 
 <!-- Common CSS Utilities -->
