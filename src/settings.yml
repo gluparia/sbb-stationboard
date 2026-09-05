@@ -4,10 +4,32 @@ no_screen_padding: 'no'
 dark_mode: 'no'
 static_data: ''
 polling_verb: get
+framework_version: 2.3.7
+serverless_language: ''
 polling_url: https://transport.opendata.ch/v1/stationboard?id={{station_id}}&limit=30&fields[]=stationboard/category&fields[]=stationboard/number&fields[]=stationboard/to&fields[]=stationboard/stop/departure&fields[]=stationboard/stop/prognosis/departure
 polling_headers: ''
 polling_body: ''
-id: 166116
+id: 460807
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+oauth_authorize_url: ''
+oauth_token_url: ''
+oauth_scopes: ''
+oauth_scope_separator: ''
+oauth_refresh_url: ''
+oauth_auth_params: ''
+oauth_token_headers: ''
+oauth_token_site: ''
+oauth_token_params: ''
+oauth_token_request_auth_method: ''
+oauth_body_format: ''
+oauth_token_response_metadata: ''
+oauth_authorization_method: ''
+oauth_refresh_params: ''
+oauth_token_field_name: ''
+oauth_expiry_field_name: ''
+oauth_expiry_strategy: ''
+oauth_fixed_expiry_ms: ''
 custom_fields:
 - keyname: doesnt_matter
   name: About This Plugin
@@ -73,5 +95,6 @@ custom_fields:
   name: Bevorzugtes Seilbahn-Icon
   description: "(Zahnradbahn oder Gondel)"
   help_text: Wähle „Zahnradbahn“ oder „Gondel“ für dein favorisiertes Icon.
-name: SBB Swiss Stationboard
+name: SBB Letzibach
+description: ''
 refresh_interval: 15

@@ -9,7 +9,7 @@
 {% assign cablewayIcon = trmnl.plugin_settings.custom_fields_values.cableway_icon | default: "Gondel" %}
 
 
-<div style="display:flex;flex-direction:column;height:100%;width:100%;">
+<div class="sbb-stationboard" data-station="{{ station | escape }}" data-station-id="{{ station_id | escape }}" data-walkingtime="{{ walkingTime | escape }}" data-abbrs="{{ abbr_string | escape }}" data-hidewords="{{ hidewords | escape }}" data-linetargetfilter="{{ linetarget_filter | escape }}" data-mindepartureoffset="{{ minDepartureOffset | escape }}" data-hidegroups="{{ transportHideGroups | escape }}" data-cablewayicon="{{ cablewayIcon | escape }}" style="display:flex;flex-direction:column;height:100%;width:100%;">
   <div style="flex:1 1 auto;display:flex;flex-direction:column;width:100%;">
     <div style="width:100%;padding-left:8px;padding-right:8px;box-sizing:border-box;">
       <table class="table table--condensed" style="width:100%;margin:0;table-layout:fixed;">
@@ -23,7 +23,7 @@
             <th class="col-losum"><span class="title title--big">Los um</span></th>
           </tr>
         </thead>
-        <tbody id="departures-body">
+        <tbody class="departures-body">
           <tr>
             <td colspan="6"><span class="label label--big">Lade Daten…</span></td>
           </tr>
@@ -46,7 +46,7 @@
 
 <!-- Layout-specific CSS -->
 <style>
-  :root {
+  .sbb-stationboard {
     --gap-45: 25px;
   }
 
@@ -88,23 +88,14 @@
   }
 </style>
 
+
 <script>
-  /* -------- Liquid -> data-Attribute -------- */
-  document.body.setAttribute('data-station', '{{ station }}');
-  document.body.setAttribute('data-station_id', '{{ station_id }}');
-  document.body.setAttribute('data-walkingtime', '{{ walkingTime }}');
-  document.body.setAttribute('data-abbrs', `{{ abbr_string }}`);
-  document.body.setAttribute('data-hidewords', `{{ hidewords }}`);
-  document.body.setAttribute('data-linetargetfilter', `{{ linetarget_filter }}`);
-  document.body.setAttribute('data-mindepartureoffset', '{{ minDepartureOffset }}');
-  document.body.setAttribute('data-hidegroups', `{{ transportHideGroups }}`);
-  document.body.setAttribute('data-cablewayicon', `{{ cablewayIcon }}`);
-
-  /* -------- Inject stationboard data -------- */
-  window.stationboardData = {
-    stationboard: {{ stationboard | json }}
-  };
-
-  /* -------- Render with full screen parameters -------- */
-  renderDepartures(12, 'big');
+  (function () {
+    const container = Array.from(document.querySelectorAll('.sbb-stationboard'))
+      .find(instance => !instance.dataset.sbbRendered);
+    if (!container) return;
+    container.dataset.sbbRendered = 'true';
+    const data = { stationboard: {{ stationboard | json }} };
+    window.SBBStationboard.renderDepartures(container, data, 12, 'big');
+  })();
 </script>
